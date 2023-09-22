@@ -1,13 +1,48 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
+
+import { useEffect, useState } from "react";
+import { useUpdateTaskMutation } from "../../../slices/tasksApiSlice";
+import { toast } from "react-toastify";
 
 const UpdateTaskModal = ({
   task,
   setShowModal,
-  handleTaskUpdate,
-  setName,
-  setDescription,
-  setDueDate,
+
+
 }) => {
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [updateTask, { isLoading: updateLoading }, refetch] =
+    useUpdateTaskMutation();
+  useEffect(() => {
+    if (task) {
+      setName(task.taskName);
+      setDescription(task.description);
+      setDueDate(task.dueDate);
+
+    }
+  }, [task]);
+  const handleTaskUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await updateTask({
+        taskId: task._id,
+        taskName: name,
+        description,
+        dueDate,
+      }).unwrap();
+
+      toast("Update successfully");
+      setShowModal(false);
+      refetch();
+    } catch (err) {
+      toast(err?.data?.message || err.error);
+
+    }
+  };
   return (
     <>
       <>

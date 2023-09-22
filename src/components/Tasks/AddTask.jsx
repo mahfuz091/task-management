@@ -1,13 +1,15 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useCreateTaskMutation } from "../../slices/tasksApiSlice";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const AddTask = () => {
   const [createTask, { isLoading: loadingCreate }] = useCreateTaskMutation();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const navigate = useNavigate();
   const handleCreateTask = async (e) => {
     e.preventDefault();
     try {
@@ -15,7 +17,9 @@ const AddTask = () => {
         taskName: name,
         description,
         dueDate,
-      });
+      }).unwrap();
+      toast("Added Successfully")
+      navigate('/')
     } catch (err) {
       alert(err?.data?.message || err.error);
     }
